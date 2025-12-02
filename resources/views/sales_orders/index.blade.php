@@ -63,7 +63,9 @@
                 <th class="text-end">Before Disc</th>
                 <th class="text-end">Disc</th>
                 <th class="text-end">Tax</th>
-                <th class="text-end">Total</th>
+                <th class="text-end">Total Amount</th>
+                <th class="text-end">Total Profit</th>
+                <th class="text-end">Total Cost Of Good</th>
                 <th></th>
             </tr>
         </thead>
@@ -79,6 +81,8 @@
                     <td class="text-end">{{ number_format($order->total_discount, 2, ',', '.') }}</td>
                     <td class="text-end">{{ number_format($order->total_tax, 2, ',', '.') }}</td>
                     <td class="text-end"><strong>{{ number_format($order->total_amount, 2, ',', '.') }}</strong></td>
+                    <td class="text-end"><strong>{{ number_format($order->total_profit, 2, ',', '.') }}</strong></td>
+                    <td class="text-end"><strong>{{ number_format($order->total_cost_of_goods, 2, ',', '.') }}</strong></td>
                     <td>
                         {{-- View --}}
                         <a href="{{ route('sales-orders.show', $order) }}" 
