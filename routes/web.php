@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VariantTypeController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\SalesOrderController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,3 +18,5 @@ Route::get('sales-orders/{salesOrder}', [SalesOrderController::class, 'show'])->
 Route::post('sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store');
 Route::delete('sales-orders/{salesOrder}', [SalesOrderController::class, 'destroy'])
     ->name('sales-orders.destroy');
+Route::get('/dashboard/profit', [ReportController::class, 'profitDashboard'])
+    ->name('dashboard.profit');
