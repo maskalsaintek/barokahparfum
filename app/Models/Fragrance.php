@@ -19,4 +19,8 @@ class Fragrance extends Model
         'origin',
         'is_active',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }
