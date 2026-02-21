@@ -45,7 +45,7 @@ class FragranceController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'code'        => 'required|string|max:50|unique:fragrances,code',
+            'code'        => 'required|string|max:50|unique:fragrance,code',
             'name'        => 'required|string|max:150',
             'gender'      => 'required|in:MALE,FEMALE,UNISEX',
             'origin'      => 'nullable|string|max:150',
@@ -70,7 +70,7 @@ class FragranceController extends Controller
     public function update(Request $request, Fragrance $fragrance)
     {
         $data = $request->validate([
-            'code'        => 'required|string|max:50|unique:fragrances,code,' . $fragrance->id,
+            'code'        => 'required|string|max:50|unique:fragrance,code,' . $fragrance->id,
             'name'        => 'required|string|max:150',
             'gender'      => 'required|in:MALE,FEMALE,UNISEX',
             'origin'      => 'nullable|string|max:150',
