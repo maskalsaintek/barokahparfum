@@ -58,11 +58,8 @@
                 <th>#</th>
                 <th>Order No</th>
                 <th>Date</th>
-                <th>Customer</th>
-                <th>Payment</th>
                 <th class="text-end">Before Disc</th>
                 <th class="text-end">Disc</th>
-                <th class="text-end">Tax</th>
                 <th class="text-end">Total Amount</th>
                 <th class="text-end">Total Profit</th>
                 <th class="text-end">Total Cost Of Good</th>
@@ -75,11 +72,8 @@
                     <td>{{ $loop->iteration + ($orders->currentPage() - 1) * $orders->perPage() }}</td>
                     <td>{{ $order->order_number }}</td>
                     <td>{{ optional($order->order_date)->format('Y-m-d H:i') }}</td>
-                    <td>{{ $order->customer_name ?? '-' }}</td>
-                    <td>{{ $order->payment_method }}</td>
                     <td class="text-end">{{ number_format($order->total_before_discount, 2, ',', '.') }}</td>
                     <td class="text-end">{{ number_format($order->total_discount, 2, ',', '.') }}</td>
-                    <td class="text-end">{{ number_format($order->total_tax, 2, ',', '.') }}</td>
                     <td class="text-end"><strong>{{ number_format($order->total_amount, 2, ',', '.') }}</strong></td>
                     <td class="text-end"><strong>{{ number_format($order->total_profit, 2, ',', '.') }}</strong></td>
                     <td class="text-end"><strong>{{ number_format($order->total_cost_of_goods, 2, ',', '.') }}</strong></td>
