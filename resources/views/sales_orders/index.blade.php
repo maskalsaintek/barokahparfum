@@ -71,7 +71,7 @@
                 <tr>
                     <td>{{ $loop->iteration + ($orders->currentPage() - 1) * $orders->perPage() }}</td>
                     <td>{{ $order->order_number }}</td>
-                    <td>{{ optional($order->order_date)->format('Y-m-d H:i') }}</td>
+                    <td>{{ optional($order->order_date)->format('d-m-Y H:i:s') }}</td>
                     <td class="text-end">{{ number_format($order->total_before_discount, 2, ',', '.') }}</td>
                     <td class="text-end">{{ number_format($order->total_discount, 2, ',', '.') }}</td>
                     <td class="text-end"><strong>{{ number_format($order->total_amount, 2, ',', '.') }}</strong></td>
