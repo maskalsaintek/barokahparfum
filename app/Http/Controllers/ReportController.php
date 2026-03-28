@@ -92,7 +92,7 @@ class ReportController extends Controller
             [$start, $end] // parameter binding
         );
 
-        return view('reports.best_seller_fragrances', [
+        return view('report.best_seller_fragrances', [
             'rows' => $rows,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
