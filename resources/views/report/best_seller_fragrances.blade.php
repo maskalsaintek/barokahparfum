@@ -5,38 +5,39 @@
 @section('content')
     <h1>Best Seller Fragrances</h1>
 
-    <form method="GET" action="{{ route('reports.best-seller-fragrances') }}" style="margin-bottom: 20px;">
+    {{-- FORM FILTER --}}
+    <form method="GET" action="{{ route('reports.best-seller-fragrances') }}" style="margin-bottom:20px;">
         <div class="field">
-            <label for="date_from">Date From</label>
-            <input type="date" name="date_from" id="date_from" value="{{ $dateFrom }}">
+            <label>Date From</label>
+            <input type="date" name="date_from" value="{{ $dateFrom }}">
         </div>
 
         <div class="field">
-            <label for="date_to">Date To</label>
-            <input type="date" name="date_to" id="date_to" value="{{ $dateTo }}">
+            <label>Date To</label>
+            <input type="date" name="date_to" value="{{ $dateTo }}">
         </div>
 
         <div class="field">
-            <label for="limit">Top N</label>
-            <input type="number" name="limit" id="limit" value="{{ $limit }}" min="1" max="100">
+            <label>Top N</label>
+            <input type="number" name="limit" value="{{ $limit }}" min="1" max="100">
         </div>
 
-        <button type="submit" class="btn btn-primary">Show Report</button>
+        <button type="submit" class="btn btn-primary">Generate</button>
     </form>
 
     <p>
         Periode:
-        <strong>{{ $dateFrom }}</strong>
+        <strong>{{ $dateFrom }} 00:00:00</strong>
         s/d
-        <strong>{{ $dateTo }}</strong>
+        <strong>{{ $dateTo }} 23:59:59</strong>
     </p>
 
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Rank</th>
-                <th>Fragrance Code</th>
-                <th>Fragrance Name</th>
+                <th>Code</th>
+                <th>Name</th>
                 <th>Total ML Sold</th>
                 <th>Total Orders</th>
             </tr>
@@ -52,7 +53,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5">No data found.</td>
+                    <td colspan="5">No data found</td>
                 </tr>
             @endforelse
         </tbody>

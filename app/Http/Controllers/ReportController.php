@@ -59,6 +59,7 @@ class ReportController extends Controller
 
     public function bestSellerFragrances(Request $request)
     {
+        // default value (kalau belum diisi)
         $dateFrom = $request->input('date_from', '2026-02-25');
         $dateTo   = $request->input('date_to', '2026-03-31');
         $limit    = (int) $request->input('limit', 10);
@@ -67,25 +68,29 @@ class ReportController extends Controller
             $limit = 10;
         }
 
-        $rows = DB::table('sales_order_item as soi')
-            ->join('sales_order as so', 'so.id', '=', 'soi.sales_order_id')
-            ->join('product_variant as pv', 'pv.id', '=', 'soi.product_variant_id')
-            ->join('fragrance as f', 'f.id', '=', 'pv.fragrance_id')
-            ->whereBetween('so.order_date', [
-                $dateFrom . ' 00:00:00',
-                $dateTo . ' 23:59:59',
-            ])
-            ->selectRaw('
-                f.id as fragrance_id,
-                f.code as fragrance_code,
-                f.name as fragrance_name,
-                SUM(soi.quantity) as total_ml_sold,
-                COUNT(DISTINCT so.id) as total_orders
-            ')
-            ->groupBy('f.id', 'f.code', 'f.name')
-            ->orderByDesc('total_ml_sold')
-            ->limit($limit)
-            ->get();
+        // FORMAT HARUS SAMA DENGAN QUERY ORIGINAL
+        $start = $dateFrom . ' 00:00:00';
+        $end   = $dateTo . ' 23:59:59';
+
+        $rows = DB::select(
+            "
+            SELECT
+                f.id AS fragrance_id,
+                f.code AS fragrance_code,
+                f.name AS fragrance_name,
+                SUM(soi.quantity) AS total_ml_sold,
+                COUNT(DISTINCT so.id) AS total_orders
+            FROM sales_order_item soi
+            JOIN sales_order so ON so.id = soi.sales_order_id
+            JOIN product_variant pv ON pv.id = soi.product_variant_id
+            JOIN fragrance f ON f.id = pv.fragrance_id
+            WHERE so.order_date BETWEEN ? AND ?
+            GROUP BY f.id, f.code, f.name
+            ORDER BY total_ml_sold DESC
+            LIMIT {$limit}
+            ",
+            [$start, $end] // parameter binding
+        );
 
         return view('reports.best_seller_fragrances', [
             'rows' => $rows,
