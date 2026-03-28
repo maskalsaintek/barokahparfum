@@ -56,4 +56,42 @@ class ReportController extends Controller
             'daily'   => $daily,
         ]);
     }
+
+    public function bestSellerFragrances(Request $request)
+    {
+        $dateFrom = $request->input('date_from', '2026-02-25');
+        $dateTo   = $request->input('date_to', '2026-03-31');
+        $limit    = (int) $request->input('limit', 10);
+
+        if ($limit <= 0) {
+            $limit = 10;
+        }
+
+        $rows = DB::table('sales_order_item as soi')
+            ->join('sales_order as so', 'so.id', '=', 'soi.sales_order_id')
+            ->join('product_variant as pv', 'pv.id', '=', 'soi.product_variant_id')
+            ->join('fragrance as f', 'f.id', '=', 'pv.fragrance_id')
+            ->whereBetween('so.order_date', [
+                $dateFrom . ' 00:00:00',
+                $dateTo . ' 23:59:59',
+            ])
+            ->selectRaw('
+                f.id as fragrance_id,
+                f.code as fragrance_code,
+                f.name as fragrance_name,
+                SUM(soi.quantity) as total_ml_sold,
+                COUNT(DISTINCT so.id) as total_orders
+            ')
+            ->groupBy('f.id', 'f.code', 'f.name')
+            ->orderByDesc('total_ml_sold')
+            ->limit($limit)
+            ->get();
+
+        return view('reports.best_seller_fragrances', [
+            'rows' => $rows,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+            'limit' => $limit,
+        ]);
+    }
 }

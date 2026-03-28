@@ -22,3 +22,5 @@ Route::delete('sales-orders/{salesOrder}', [SalesOrderController::class, 'destro
     ->name('sales-orders.destroy');
 Route::get('/dashboard/profit', [ReportController::class, 'profitDashboard'])
     ->name('dashboard.profit');
+Route::get('reports/best-seller-fragrances', [ReportController::class, 'bestSellerFragrances'])
+    ->name('reports.best-seller-fragrances');
