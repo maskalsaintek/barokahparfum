@@ -24,3 +24,5 @@ Route::get('/dashboard/profit', [ReportController::class, 'profitDashboard'])
     ->name('dashboard.profit');
 Route::get('reports/best-seller-fragrances', [ReportController::class, 'bestSellerFragrances'])
     ->name('reports.best-seller-fragrances');
+Route::get('reports/total-profit', [ReportController::class, 'totalProfit'])
+    ->name('reports.total-profit');

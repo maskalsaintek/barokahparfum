@@ -99,4 +99,27 @@ class ReportController extends Controller
             'limit' => $limit,
         ]);
     }
+
+    public function totalProfit(Request $request)
+    {
+        $dateFrom = $request->input('date_from', '2026-03-08');
+        $dateTo   = $request->input('date_to', '2026-04-07');
+
+        $result = DB::selectOne(
+            "
+            SELECT SUM(total_profit) AS total_profit
+            FROM sales_order
+            WHERE order_date BETWEEN ? AND ?
+            ",
+            [$dateFrom, $dateTo]
+        );
+
+        $totalProfit = $result->total_profit ?? 0;
+
+        return view('report.total_profit', [
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+            'totalProfit' => $totalProfit,
+        ]);
+    }
 }
