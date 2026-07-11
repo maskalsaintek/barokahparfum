@@ -6,19 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Barokah Parfum back office">
     <meta name="author" content="Barokah Parfum">
-    <link rel="icon" href="{{ asset('viho/assets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('viho/assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets2/images/favicon.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets2/images/favicon.png') }}" type="image/x-icon">
     <title>@yield('title', 'Barokah Parfum')</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/fontawesome.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/icofont.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/themify.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/flag-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/feather-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('viho/assets/css/color-1.css') }}" media="screen">
-    <link rel="stylesheet" type="text/css" href="{{ asset('viho/assets/css/responsive.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/fontawesome.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/icofont.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/themify.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/flag-icon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/feather-icon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/style.css') }}">
+    <link id="color" rel="stylesheet" href="{{ asset('assets2/css/color-1.css') }}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets2/css/responsive.css') }}">
 
     <style>
         :root {
@@ -392,13 +392,13 @@
             <div class="main-header-left">
                 <div class="logo-wrapper">
                     <a class="brand-wordmark" href="{{ url('/') }}">
-                        <img src="{{ asset('viho/assets/images/logo/icon-logo.png') }}" alt="">
+                        <img src="{{ asset('assets2/images/logo/icon-logo.png') }}" alt="">
                         <span>Barokah Parfum</span>
                     </a>
                 </div>
                 <div class="dark-logo-wrapper">
                     <a class="brand-wordmark" href="{{ url('/') }}">
-                        <img src="{{ asset('viho/assets/images/logo/icon-logo.png') }}" alt="">
+                        <img src="{{ asset('assets2/images/logo/icon-logo.png') }}" alt="">
                         <span>Barokah Parfum</span>
                     </a>
                 </div>
@@ -557,15 +557,15 @@
     </div>
 </div>
 
-<script src="{{ asset('viho/assets/js/jquery-3.5.1.min.js') }}"></script>
-<script src="{{ asset('viho/assets/js/icons/feather-icon/feather.min.js') }}"></script>
-<script src="{{ asset('viho/assets/js/icons/feather-icon/feather-icon.js') }}"></script>
-<script src="{{ asset('viho/assets/js/sidebar-menu.js') }}"></script>
-<script src="{{ asset('viho/assets/js/config.js') }}"></script>
-<script src="{{ asset('viho/assets/js/bootstrap_bundle.js') }}"></script>
-<script src="{{ asset('viho/assets/js/fullscreen.js') }}"></script>
-<script src="{{ asset('viho/assets/js/tooltip-init.js') }}"></script>
-<script src="{{ asset('viho/assets/js/script.js') }}"></script>
+<script src="{{ asset('assets2/js/jquery-3.5.1.min.js') }}"></script>
+<script src="{{ asset('assets2/js/icons/feather-icon/feather.min.js') }}"></script>
+<script src="{{ asset('assets2/js/icons/feather-icon/feather-icon.js') }}"></script>
+<script src="{{ asset('assets2/js/sidebar-menu.js') }}"></script>
+<script src="{{ asset('assets2/js/config.js') }}"></script>
+<script src="{{ asset('assets2/js/bootstrap_bundle.js') }}"></script>
+<script src="{{ asset('assets2/js/fullscreen.js') }}"></script>
+<script src="{{ asset('assets2/js/tooltip-init.js') }}"></script>
+<script src="{{ asset('assets2/js/script.js') }}"></script>
 
 @stack('scripts')
 </body>
