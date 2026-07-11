@@ -26,3 +26,24 @@ Route::get('reports/best-seller-fragrances', [ReportController::class, 'bestSell
     ->name('reports.best-seller-fragrances');
 Route::get('reports/total-profit', [ReportController::class, 'totalProfit'])
     ->name('reports.total-profit');
+
+Route::get('/debug-log-write-test', function () {
+    $message = 'DEBUG LOG TEST ' . now();
+    $directFile = storage_path('logs/direct-test.log');
+    $laravelLog = storage_path('logs/laravel.log');
+
+    logger()->error($message);
+    file_put_contents($directFile, $message . PHP_EOL, FILE_APPEND);
+
+    return response()->json([
+        'ok' => true,
+        'storage_path' => storage_path(),
+        'laravel_log' => $laravelLog,
+        'direct_file' => $directFile,
+        'logs_writable' => is_writable(storage_path('logs')),
+        'laravel_log_exists' => file_exists($laravelLog),
+        'laravel_log_writable' => file_exists($laravelLog) ? is_writable($laravelLog) : null,
+        'direct_file_exists' => file_exists($directFile),
+        'direct_file_writable' => file_exists($directFile) ? is_writable($directFile) : null,
+    ]);
+});
