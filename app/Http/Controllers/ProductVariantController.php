@@ -13,6 +13,18 @@ class ProductVariantController extends Controller
     {
         $query = ProductVariant::with(['fragrance', 'variantType']);
 
+        if ($request->filled('q')) {
+            $search = $request->q;
+
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('fragrance', function ($fragranceQuery) use ($search) {
+                    $fragranceQuery->where('name', 'like', "%{$search}%");
+                })->orWhereHas('variantType', function ($variantTypeQuery) use ($search) {
+                    $variantTypeQuery->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
         if ($request->filled('fragrance_id')) {
             $query->where('fragrance_id', $request->fragrance_id);
         }
@@ -27,7 +39,8 @@ class ProductVariantController extends Controller
 
         $variants = $query
             ->orderByCodes()
-            ->get();
+            ->paginate(20)
+            ->withQueryString();
 
         $fragrances   = Fragrance::orderBy('name')->get();
         $variantTypes = VariantType::orderBy('name')->get();

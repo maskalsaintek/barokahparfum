@@ -11,6 +11,16 @@
     <form method="GET" action="{{ route('product-variants.index') }}" style="margin-top:16px; margin-bottom:16px;">
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <div>
+                <label for="filter_q">Search Name</label><br>
+                <input
+                    type="text"
+                    name="q"
+                    id="filter_q"
+                    value="{{ request('q') }}"
+                    placeholder="Fragrance / variant type name"
+                >
+            </div>
+            <div>
                 <label for="filter_fragrance">Fragrance</label><br>
                 <select name="fragrance_id" id="filter_fragrance">
                     <option value="">-- All --</option>
@@ -44,6 +54,7 @@
             </div>
             <div style="align-self:flex-end;">
                 <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{{ route('product-variants.index') }}" class="btn btn-secondary">Reset</a>
             </div>
         </div>
     </form>
@@ -103,5 +114,9 @@
             @endforeach
             </tbody>
         </table>
+
+        <div style="margin-top:16px;">
+            {{ $variants->links() }}
+        </div>
     @endif
 @endsection
