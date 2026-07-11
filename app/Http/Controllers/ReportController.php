@@ -26,10 +26,10 @@ class ReportController extends Controller
         $summary = DB::table('sales_order')
             ->selectRaw('
                 COUNT(*) AS total_orders,
-                SUM(net_amount) AS total_net_sales,
+                SUM(total_amount) AS total_net_sales,
                 SUM(total_profit) AS total_profit,
-                SUM(net_amount - total_profit) AS total_hpp,
-                (SUM(total_profit) / NULLIF(SUM(net_amount - total_profit), 0)) * 100 AS total_profit_percent
+                SUM(total_amount - total_profit) AS total_hpp,
+                (SUM(total_profit) / NULLIF(SUM(total_amount - total_profit), 0)) * 100 AS total_profit_percent
             ')
             ->whereBetween('order_date', [$startDT, $endDT])
             ->first();
@@ -39,10 +39,10 @@ class ReportController extends Controller
             ->selectRaw('
                 DATE(order_date) AS order_day,
                 COUNT(*) AS total_orders,
-                SUM(net_amount) AS total_net_sales,
+                SUM(total_amount) AS total_net_sales,
                 SUM(total_profit) AS total_profit,
-                SUM(net_amount - total_profit) AS total_hpp,
-                (SUM(total_profit) / NULLIF(SUM(net_amount - total_profit), 0)) * 100 AS profit_percent
+                SUM(total_amount - total_profit) AS total_hpp,
+                (SUM(total_profit) / NULLIF(SUM(total_amount - total_profit), 0)) * 100 AS profit_percent
             ')
             ->whereBetween('order_date', [$startDT, $endDT])
             ->groupByRaw('DATE(order_date)')
