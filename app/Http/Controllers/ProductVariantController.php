@@ -26,8 +26,7 @@ class ProductVariantController extends Controller
         }
 
         $variants = $query
-            ->orderBy('fragrance_id')
-            ->orderBy('bottle_size_ml')
+            ->orderByCodes()
             ->get();
 
         $fragrances   = Fragrance::orderBy('name')->get();

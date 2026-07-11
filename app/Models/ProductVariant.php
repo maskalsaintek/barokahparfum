@@ -28,6 +28,25 @@ class ProductVariant extends Model
         'is_active'      => 'boolean',
     ];
 
+    public function scopeOrderByCodes($query)
+    {
+        return $query
+            ->orderBy(
+                Fragrance::query()
+                    ->select('code')
+                    ->whereColumn('fragrance.id', 'product_variant.fragrance_id')
+                    ->limit(1)
+            )
+            ->orderBy(
+                VariantType::query()
+                    ->select('code')
+                    ->whereColumn('variant_type.id', 'product_variant.variant_type_id')
+                    ->limit(1)
+            )
+            ->orderBy('bottle_size_ml')
+            ->orderBy('id');
+    }
+
     public function fragrance()
     {
         return $this->belongsTo(Fragrance::class, 'fragrance_id');

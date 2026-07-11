@@ -18,7 +18,7 @@ class SalesOrderController extends Controller
     {
         $productVariants = ProductVariant::with(['fragrance', 'variantType'])
             ->where('is_active', true)
-            ->orderBy('fragrance_id')
+            ->orderByCodes()
             ->get();
 
         return view('sales_orders.create', compact('productVariants'));
@@ -210,5 +210,4 @@ class SalesOrderController extends Controller
         return $variant->cost_ml * $qty;
     }
 }
-
 
