@@ -1,113 +1,155 @@
 @extends('layouts.app')
 
-@section('title', 'Sales Order Detail')
+@section('title', 'Detail Sales Order')
 
 @section('content')
-    <h1>Sales Order Detail</h1>
-
-    <div class="mb-3">
-        <a href="{{ route('sales-orders.index') }}" class="btn btn-sm btn-secondary">&laquo; Back to list</a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-muted mb-1">Sales Order</p>
+            <h2 class="mb-0">{{ $salesOrder->order_number }}</h2>
+        </div>
+        <a href="{{ route('sales-orders.index') }}" class="btn btn-outline-secondary mt-2 mt-sm-0">
+            <i class="fa fa-arrow-left mr-1"></i> Kembali
+        </a>
     </div>
 
-    {{-- HEADER INFO --}}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h3>Order {{ $salesOrder->order_number }}</h3>
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Tutup">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
 
-            <p>
-                <strong>Date:</strong>
-                {{ optional($salesOrder->order_date)->format('Y-m-d H:i') }}<br>
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Item Pesanan</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="pl-4">#</th>
+                                    <th>Produk</th>
+                                    <th class="text-right">Harga</th>
+                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-right">Diskon</th>
+                                    <th class="text-right pr-4">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($salesOrder->items as $item)
+                                    @php
+                                        $variant = $item->productVariant;
+                                        $fragrance = optional($variant)->fragrance;
+                                        $variantType = optional($variant)->variantType;
+                                    @endphp
+                                    <tr>
+                                        <td class="pl-4">{{ $loop->iteration }}</td>
+                                        <td>
+                                            <strong>
+                                                {{ $fragrance
+                                                    ? trim($fragrance->code.' - '.$fragrance->name, ' -')
+                                                    : 'Produk #'.$item->product_variant_id }}
+                                            </strong>
+                                            @if ($variantType || optional($variant)->bottle_size_ml)
+                                                <div class="small text-muted mt-1">
+                                                    {{ optional($variantType)->name ?? 'Varian' }}
+                                                    @if (optional($variant)->bottle_size_ml)
+                                                        &middot; {{ number_format($variant->bottle_size_ml, 0, ',', '.') }} ml
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="text-right text-nowrap">Rp {{ number_format((float) $item->unit_price, 0, ',', '.') }}</td>
+                                        <td class="text-center text-nowrap">
+                                            {{ number_format((float) $item->quantity, 2, ',', '.') }} {{ $item->uom }}
+                                        </td>
+                                        <td class="text-right text-nowrap">
+                                            @if ((float) $item->discount_amount > 0)
+                                                Rp {{ number_format((float) $item->discount_amount, 0, ',', '.') }}
+                                                @if ((float) $item->discount_percent > 0)
+                                                    <div class="small text-muted">{{ number_format((float) $item->discount_percent, 2, ',', '.') }}%</div>
+                                                @endif
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td class="text-right text-nowrap pr-4">
+                                            <strong>Rp {{ number_format((float) $item->line_total, 0, ',', '.') }}</strong>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-5">Tidak ada item pada pesanan ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <strong>Customer:</strong>
-                {{ $salesOrder->customer_name ?? 'Walk-in' }}<br>
+        <div class="col-xl-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informasi Pesanan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="small text-muted">Tanggal</div>
+                        <strong>{{ optional($salesOrder->order_date)->format('d M Y, H:i') ?? '-' }}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <div class="small text-muted">Pelanggan</div>
+                        <strong>{{ $salesOrder->customer_name ?: 'Pelanggan umum' }}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <div class="small text-muted">Metode Pembayaran</div>
+                        <span class="badge badge-primary">{{ $salesOrder->payment_method }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <div class="small text-muted">Dibuat Oleh</div>
+                        <strong>{{ $salesOrder->created_by ?: '-' }}</strong>
+                    </div>
+                    @if ($salesOrder->notes)
+                        <div>
+                            <div class="small text-muted">Catatan</div>
+                            <p class="mb-0">{{ $salesOrder->notes }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
 
-                <strong>Payment Method:</strong>
-                {{ $salesOrder->payment_method }}<br>
-
-                @if($salesOrder->notes)
-                    <strong>Notes:</strong>
-                    {{ $salesOrder->notes }}<br>
-                @endif
-
-                @if($salesOrder->created_by)
-                    <strong>Created By:</strong>
-                    {{ $salesOrder->created_by }}
-                @endif
-            </p>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Ringkasan Pembayaran</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span>Rp {{ number_format((float) $salesOrder->total_before_discount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Diskon</span>
+                        <span>- Rp {{ number_format((float) $salesOrder->total_discount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Pajak</span>
+                        <span>Rp {{ number_format((float) $salesOrder->total_tax, 0, ',', '.') }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Total</strong>
+                        <h4 class="text-primary mb-0">Rp {{ number_format((float) $salesOrder->total_amount, 0, ',', '.') }}</h4>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    {{-- ITEMS TABLE --}}
-    <h3>Items</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Product</th>
-                <th>Qty</th>
-                <th>UoM</th>
-                <th class="text-end">Unit Price</th>
-                <th class="text-end">Disc %</th>
-                <th class="text-end">Disc Rp</th>
-                <th class="text-end">Line Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($salesOrder->items as $item)
-                @php
-                    $pv = $item->productVariant;
-                    $frag = $pv->fragrance ?? null;
-                    $vt = $pv->variantType ?? null;
-                @endphp
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>
-                        @if($frag)
-                            {{ $frag->code }} - {{ $frag->name }}
-                        @else
-                            Product #{{ $item->product_variant_id }}
-                        @endif
-
-                        @if($vt && $pv->bottle_size_ml)
-                            <br><small>{{ $vt->name }} ({{ $pv->bottle_size_ml }} ml)</small>
-                        @endif
-                    </td>
-                    <td>{{ number_format($item->quantity, 2, ',', '.') }}</td>
-                    <td>{{ $item->uom }}</td>
-                    <td class="text-end">{{ number_format($item->unit_price, 2, ',', '.') }}</td>
-                    <td class="text-end">{{ number_format($item->discount_percent, 2, ',', '.') }}</td>
-                    <td class="text-end">{{ number_format($item->discount_amount, 2, ',', '.') }}</td>
-                    <td class="text-end"><strong>{{ number_format($item->line_total, 2, ',', '.') }}</strong></td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8">Tidak ada item.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    {{-- SUMMARY --}}
-    <div style="max-width: 400px; margin-left:auto;">
-        <table class="table">
-            <tr>
-                <th>Subtotal</th>
-                <td class="text-end">{{ number_format($salesOrder->total_before_discount, 2, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <th>Discount</th>
-                <td class="text-end">{{ number_format($salesOrder->total_discount, 2, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <th>Tax</th>
-                <td class="text-end">{{ number_format($salesOrder->total_tax, 2, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td class="text-end"><strong>{{ number_format($salesOrder->total_amount, 2, ',', '.') }}</strong></td>
-            </tr>
-        </table>
-    </div>
-
-    {{-- kalau mau tombol print / export nanti bisa ditambah di sini --}}
 @endsection
