@@ -45,7 +45,7 @@ class ProductVariantApiTest extends TestCase
         $variantTypeId = $this->createVariantType();
         $variant = ProductVariant::create($this->variantData($fragranceId, $variantTypeId));
 
-        $this->getJson('/api/product-variants')
+        $this->getJson('/api/product-variants?fragrance_name=Vanilla&variant_type_code=BTL&bottle_size_ml=30')
             ->assertOk()
             ->assertJsonPath('data.0.id', $variant->id)
             ->assertJsonPath('data.0.fragrance.name', 'Vanilla')

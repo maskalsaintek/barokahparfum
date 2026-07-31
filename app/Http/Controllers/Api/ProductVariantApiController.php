@@ -13,32 +13,40 @@ class ProductVariantApiController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = $request->validate([
-            'q' => ['nullable', 'string', 'max:100'],
             'fragrance_id' => ['nullable', 'integer', 'exists:fragrance,id'],
+            'fragrance_code' => ['nullable', 'string', 'max:50'],
+            'fragrance_name' => ['nullable', 'string', 'max:150'],
             'variant_type_id' => ['nullable', 'integer', 'exists:variant_type,id'],
+            'variant_type_code' => ['nullable', 'string', 'max:50'],
+            'variant_type_name' => ['nullable', 'string', 'max:100'],
+            'bottle_size_ml' => ['nullable', 'numeric', 'min:0.1'],
+            'base_price' => ['nullable', 'numeric', 'min:0'],
+            'cost_ml' => ['nullable', 'numeric', 'min:0'],
+            'mix_ratio' => ['nullable', 'string', 'max:50'],
             'is_active' => ['nullable', 'boolean'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
         $variants = ProductVariant::query()
             ->with(['fragrance', 'variantType'])
-            ->when($filters['q'] ?? null, function ($query, string $search): void {
-                $query->where(function ($query) use ($search): void {
-                    $query->whereHas('fragrance', function ($query) use ($search): void {
-                        $query->where(function ($query) use ($search): void {
-                            $query->where('name', 'like', "%{$search}%")
-                                ->orWhere('code', 'like', "%{$search}%");
-                        });
-                    })->orWhereHas('variantType', function ($query) use ($search): void {
-                        $query->where(function ($query) use ($search): void {
-                            $query->where('name', 'like', "%{$search}%")
-                                ->orWhere('code', 'like', "%{$search}%");
-                        });
-                    });
-                });
-            })
             ->when(isset($filters['fragrance_id']), fn ($query) => $query->where('fragrance_id', $filters['fragrance_id']))
+            ->when($filters['fragrance_code'] ?? null, function ($query, string $code): void {
+                $query->whereHas('fragrance', fn ($query) => $query->where('code', 'like', "%{$code}%"));
+            })
+            ->when($filters['fragrance_name'] ?? null, function ($query, string $name): void {
+                $query->whereHas('fragrance', fn ($query) => $query->where('name', 'like', "%{$name}%"));
+            })
             ->when(isset($filters['variant_type_id']), fn ($query) => $query->where('variant_type_id', $filters['variant_type_id']))
+            ->when($filters['variant_type_code'] ?? null, function ($query, string $code): void {
+                $query->whereHas('variantType', fn ($query) => $query->where('code', 'like', "%{$code}%"));
+            })
+            ->when($filters['variant_type_name'] ?? null, function ($query, string $name): void {
+                $query->whereHas('variantType', fn ($query) => $query->where('name', 'like', "%{$name}%"));
+            })
+            ->when(isset($filters['bottle_size_ml']), fn ($query) => $query->where('bottle_size_ml', $filters['bottle_size_ml']))
+            ->when(isset($filters['base_price']), fn ($query) => $query->where('base_price', $filters['base_price']))
+            ->when(isset($filters['cost_ml']), fn ($query) => $query->where('cost_ml', $filters['cost_ml']))
+            ->when($filters['mix_ratio'] ?? null, fn ($query, string $mixRatio) => $query->where('mix_ratio', 'like', "%{$mixRatio}%"))
             ->when(array_key_exists('is_active', $filters), fn ($query) => $query->where('is_active', $filters['is_active']))
             ->orderByCodes()
             ->paginate($filters['per_page'] ?? 20)
