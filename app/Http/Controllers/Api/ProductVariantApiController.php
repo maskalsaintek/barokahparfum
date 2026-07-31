@@ -25,9 +25,11 @@ class ProductVariantApiController extends Controller
             'mix_ratio' => ['nullable', 'string', 'max:50'],
             'is_active' => ['nullable', 'boolean'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'offset' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $variants = ProductVariant::query()
+        $query = ProductVariant::query()
             ->with(['fragrance', 'variantType'])
             ->when(isset($filters['fragrance_id']), fn ($query) => $query->where('fragrance_id', $filters['fragrance_id']))
             ->when($filters['fragrance_code'] ?? null, function ($query, string $code): void {
@@ -48,9 +50,27 @@ class ProductVariantApiController extends Controller
             ->when(isset($filters['cost_ml']), fn ($query) => $query->where('cost_ml', $filters['cost_ml']))
             ->when($filters['mix_ratio'] ?? null, fn ($query, string $mixRatio) => $query->where('mix_ratio', 'like', "%{$mixRatio}%"))
             ->when(array_key_exists('is_active', $filters), fn ($query) => $query->where('is_active', $filters['is_active']))
-            ->orderByCodes()
-            ->paginate($filters['per_page'] ?? 20)
-            ->withQueryString();
+            ->orderByCodes();
+
+        if (array_key_exists('limit', $filters) || array_key_exists('offset', $filters)) {
+            $limit = (int) ($filters['limit'] ?? 20);
+            $offset = (int) ($filters['offset'] ?? 0);
+            $total = (clone $query)->count();
+            $data = $query->skip($offset)->take($limit)->get();
+
+            return response()->json([
+                'data' => $data,
+                'meta' => [
+                    'total' => $total,
+                    'limit' => $limit,
+                    'offset' => $offset,
+                    'next_offset' => $offset + $data->count(),
+                    'has_more' => $offset + $data->count() < $total,
+                ],
+            ]);
+        }
+
+        $variants = $query->paginate($filters['per_page'] ?? 20)->withQueryString();
 
         return response()->json($variants);
     }

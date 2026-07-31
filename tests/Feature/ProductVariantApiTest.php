@@ -51,6 +51,17 @@ class ProductVariantApiTest extends TestCase
             ->assertJsonPath('data.0.fragrance.name', 'Vanilla')
             ->assertJsonPath('data.0.variant_type.name', 'Bottle')
             ->assertJsonStructure(['data', 'current_page', 'last_page', 'per_page', 'total']);
+
+        ProductVariant::create($this->variantData($fragranceId, $variantTypeId));
+
+        $this->getJson('/api/product-variants?limit=1&offset=0')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('meta.total', 2)
+            ->assertJsonPath('meta.limit', 1)
+            ->assertJsonPath('meta.offset', 0)
+            ->assertJsonPath('meta.next_offset', 1)
+            ->assertJsonPath('meta.has_more', true);
     }
 
     public function test_it_creates_shows_updates_and_deletes_a_variant(): void

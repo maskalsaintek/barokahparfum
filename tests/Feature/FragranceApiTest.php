@@ -43,6 +43,21 @@ class FragranceApiTest extends TestCase
             ->assertJsonPath('data.0.id', $created['id'])
             ->assertJsonStructure(['data', 'current_page', 'last_page', 'per_page', 'total']);
 
+        Fragrance::create([
+            'code' => 'VNL',
+            'name' => 'Vanilla',
+            'gender' => 'UNISEX',
+        ]);
+
+        $this->getJson('/api/fragrances?limit=1&offset=1')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('meta.total', 2)
+            ->assertJsonPath('meta.limit', 1)
+            ->assertJsonPath('meta.offset', 1)
+            ->assertJsonPath('meta.next_offset', 2)
+            ->assertJsonPath('meta.has_more', false);
+
         $this->getJson('/api/fragrances/'.$created['id'])
             ->assertOk()
             ->assertJsonPath('id', $created['id']);

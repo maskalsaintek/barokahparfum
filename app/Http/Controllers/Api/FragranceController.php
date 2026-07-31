@@ -19,18 +19,38 @@ class FragranceController extends Controller
             'origin' => ['nullable', 'string', 'max:150'],
             'is_active' => ['nullable', 'boolean'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'offset' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $fragrances = Fragrance::query()
+        $query = Fragrance::query()
             ->when($filters['code'] ?? null, fn ($query, string $code) => $query->where('code', 'like', "%{$code}%"))
             ->when($filters['name'] ?? null, fn ($query, string $name) => $query->where('name', 'like', "%{$name}%"))
             ->when($filters['gender'] ?? null, fn ($query, string $gender) => $query->where('gender', $gender))
             ->when($filters['origin'] ?? null, fn ($query, string $origin) => $query->where('origin', 'like', "%{$origin}%"))
             ->when(array_key_exists('is_active', $filters), fn ($query) => $query->where('is_active', $filters['is_active']))
             ->orderBy('name')
-            ->orderBy('id')
-            ->paginate($filters['per_page'] ?? 20)
-            ->withQueryString();
+            ->orderBy('id');
+
+        if (array_key_exists('limit', $filters) || array_key_exists('offset', $filters)) {
+            $limit = (int) ($filters['limit'] ?? 20);
+            $offset = (int) ($filters['offset'] ?? 0);
+            $total = (clone $query)->count();
+            $data = $query->skip($offset)->take($limit)->get();
+
+            return response()->json([
+                'data' => $data,
+                'meta' => [
+                    'total' => $total,
+                    'limit' => $limit,
+                    'offset' => $offset,
+                    'next_offset' => $offset + $data->count(),
+                    'has_more' => $offset + $data->count() < $total,
+                ],
+            ]);
+        }
+
+        $fragrances = $query->paginate($filters['per_page'] ?? 20)->withQueryString();
 
         return response()->json($fragrances);
     }
