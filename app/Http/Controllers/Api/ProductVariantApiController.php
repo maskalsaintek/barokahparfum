@@ -14,6 +14,7 @@ class ProductVariantApiController extends Controller
     {
         $filters = $request->validate([
             'fragrance_id' => ['nullable', 'integer', 'exists:fragrance,id'],
+            'fragrance_search' => ['nullable', 'string', 'max:150'],
             'fragrance_code' => ['nullable', 'string', 'max:50'],
             'fragrance_name' => ['nullable', 'string', 'max:150'],
             'variant_type_id' => ['nullable', 'integer', 'exists:variant_type,id'],
@@ -32,6 +33,12 @@ class ProductVariantApiController extends Controller
         $query = ProductVariant::query()
             ->with(['fragrance', 'variantType'])
             ->when(isset($filters['fragrance_id']), fn ($query) => $query->where('fragrance_id', $filters['fragrance_id']))
+            ->when($filters['fragrance_search'] ?? null, function ($query, string $search): void {
+                $query->whereHas('fragrance', function ($query) use ($search): void {
+                    $query->where('code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                });
+            })
             ->when($filters['fragrance_code'] ?? null, function ($query, string $code): void {
                 $query->whereHas('fragrance', fn ($query) => $query->where('code', 'like', "%{$code}%"));
             })

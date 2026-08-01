@@ -64,6 +64,29 @@ class ProductVariantApiTest extends TestCase
             ->assertJsonPath('meta.has_more', true);
     }
 
+    public function test_it_searches_variants_by_fragrance_code_or_name_with_offset_pagination(): void
+    {
+        $vanillaId = $this->createFragrance('VNL', 'Vanilla');
+        $roseId = $this->createFragrance('ROS', 'Rose');
+        $variantTypeId = $this->createVariantType();
+
+        ProductVariant::create($this->variantData($vanillaId, $variantTypeId));
+        ProductVariant::create($this->variantData($roseId, $variantTypeId));
+
+        $this->getJson('/api/product-variants?fragrance_search=ros&limit=10&offset=0')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.fragrance.code', 'ROS')
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('meta.has_more', false);
+
+        $this->getJson('/api/product-variants?fragrance_search=van&limit=10&offset=0')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.fragrance.name', 'Vanilla')
+            ->assertJsonPath('meta.total', 1);
+    }
+
     public function test_it_creates_shows_updates_and_deletes_a_variant(): void
     {
         $fragranceId = $this->createFragrance();
@@ -93,11 +116,11 @@ class ProductVariantApiTest extends TestCase
             ->assertJsonValidationErrors(['fragrance_id', 'variant_type_id', 'base_price', 'cost_ml']);
     }
 
-    private function createFragrance(): int
+    private function createFragrance(string $code = 'VNL', string $name = 'Vanilla'): int
     {
         return Schema::getConnection()->table('fragrance')->insertGetId([
-            'code' => 'VNL',
-            'name' => 'Vanilla',
+            'code' => $code,
+            'name' => $name,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
